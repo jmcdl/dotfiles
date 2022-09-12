@@ -2,6 +2,8 @@
 
 # script must be run from the dotfile directory
 
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
 # add dotfiles to this array
 files=(".zshrc" ".zsh" ".vimrc" )
 
@@ -16,6 +18,6 @@ do
 	  	rm -rf ~/$i
 	  fi
 	  # create the symlink
-	  ln -s $i ~/$i
+	  ln -s $SCRIPT_DIR/$i ~/$i
 	fi
 done
