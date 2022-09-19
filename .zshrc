@@ -6,6 +6,7 @@ alias l="ls -alG"
 alias j="jump"
 alias lg="lazygit"
 alias emacs="Emacs"
+alias oz="/Applications/Mozart2.app/Contents/Resources/bin/oz"
 
 ### LOAD PLUGINS
 source ~/.zsh/git.plugin.zsh
