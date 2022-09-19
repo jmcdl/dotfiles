@@ -1,1 +1,6 @@
 .DS_Store
+.emacs.d/elpa/
+.emacs.d/eln-cache/
+.emacs.d/auto-save-list/
+.emacs.d/tutorial/
+.emacs.d/ido.last

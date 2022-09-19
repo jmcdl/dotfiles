@@ -5,6 +5,7 @@ compinit
 alias l="ls -alG"
 alias j="jump"
 alias lg="lazygit"
+alias emacs="Emacs"
 
 ### LOAD PLUGINS
 source ~/.zsh/git.plugin.zsh
@@ -62,6 +63,9 @@ RPROMPT='%F{yellow}%D{%f/%m/%y %L:%M:%S}%f'
 ### PATH extensions
 # add Sublime Text to path
 export PATH="/Applications/Sublime Text.app/Contents/SharedSupport/bin:$PATH"
+# add emacs-mac-app to path
+export PATH="/Applications/MacPorts/EmacsMac.app/Contents/MacOS/:$PATH"
+export PATH="/Applications/MacPorts/EmacsMac.app/Contents/MacOS/bin:$PATH"
 # depot_tools are git enhancing tools provided by the chromium codebase and used for pulling the V8 repo
 export PATH=~/code/depot_tools:$PATH
 
