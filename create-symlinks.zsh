@@ -5,15 +5,15 @@
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 # add dotfiles to this array
-files=(".zshrc" ".zsh" ".vimrc" )
+files=(".zshrc" ".zsh" ".vimrc", ".emacs.d")
 
 for i in "${files[@]}"
 do
 	# test that the symlink doesn't already exist
-	if ! [[ -L ~/$i ]]; 
+	if ! [[ -L ~/$i ]];
 	then
 	  # if there's no symlink, first check if any real files or directories are present and delete them if so
-	  if [[ -f ~/$i || -d ~/$i ]]; 
+	  if [[ -f ~/$i || -d ~/$i ]];
 	  then
 	  	rm -rf ~/$i
 	  fi
