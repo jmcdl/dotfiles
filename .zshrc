@@ -6,6 +6,7 @@ alias l="ls -alG"
 alias j="jump"
 alias lg="lazygit"
 alias emacs="Emacs"
+alias ec="emacsclient -nw"
 alias oz="/Applications/Mozart2.app/Contents/Resources/bin/oz"
 
 ### LOAD PLUGINS
@@ -70,7 +71,9 @@ export PATH="/Applications/MacPorts/EmacsMac.app/Contents/MacOS/bin:$PATH"
 # depot_tools are git enhancing tools provided by the chromium codebase and used for pulling the V8 repo
 export PATH=~/code/depot_tools:$PATH
 
-### Added by nvm installation script 
+export EDITOR="emacsclient -nw"
+
+### Added by nvm installation script
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
