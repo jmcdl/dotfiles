@@ -47,27 +47,6 @@
     :init)
 (load-theme 'nord t)
 
-;; open files from home directoy
-(setq default-directory "~/")
-
-;; increase gc threshold
-(setq gc-cons-threshold (* 20 (* 1024 1024)))
-
-;; Call DELETE-TRAILING-WHITESPACE every time a buffer is saved.
-(add-hook 'before-save-hook 'delete-trailing-whitespace)
-
-;; Treat CamelCaseSubWords as separate words in every programming mode.
-(add-hook 'prog-mode-hook 'subword-mode)
-
-;; When opening a file, always follow symlinks.
-(setq vc-follow-symlinks t)
-
-;; ensure that files end with a new line
-(setq require-final-newline t)
-
-;; delete the selected text when typing over it
-(delete-selection-mode t)
-
 ;; enable package for dragging lines and regions
 (use-package move-text
   :config
@@ -75,6 +54,11 @@
 
 ;; display line numbers
 (global-display-line-numbers-mode t)
+
+;; show file path in frame header
+(setq frame-title-format
+      (list (format "%s %%S: %%j " (system-name))
+        '(buffer-file-name "%f" (dired-directory dired-directory "%b"))))
 
 ;; Store backups and auto-saved files in
 ;; TEMPORARY-FILE-DIRECTORY (which defaults to /tmp on Unix),
@@ -90,9 +74,6 @@
   (setq auto-save-file-name-transforms
         `((".*" ,temporary-file-directory t)))
 
-(setq read-process-output-max (* 1024 1024)) ;; 1mb
-(setq auto-save-default nil)
-(setq make-backup-files nil)
 (setq create-lockfiles nil)
 
 ;; when scrolling outside of window only move one line at a time
@@ -111,7 +92,6 @@
 (sensible-defaults/make-scripts-executable)
 (sensible-defaults/single-space-after-periods)
 (sensible-defaults/offer-to-create-parent-directories-on-save)
-;; (sensible-defaults/apply-changes-to-highlighted-region) - activated by default from emacs 23 on
 (sensible-defaults/overwrite-selected-text)
 (sensible-defaults/ensure-that-files-end-with-newline)
 (sensible-defaults/confirm-closing-emacs)
@@ -127,12 +107,3 @@
 (sensible-defaults/yank-to-point-on-mouse-click)
 ;; sensible key bindings
 (sensible-defaults/use-all-keybindings)
-
-;; enable Interactively-Do
-;; (setq ido-enable-flex-matching t)
-;; (setq ido-everywhere t)
-;; (ido-mode 1)
-
-;; Built-in project package
-(require 'project)
-(global-set-key (kbd "C-x p f") #'project-find-file)
