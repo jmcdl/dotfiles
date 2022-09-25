@@ -5,7 +5,7 @@
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 # add dotfiles to this array
-files=(".zshrc" ".zsh" ".vimrc", ".emacs.d")
+files=(".zshrc.shared" ".zsh" ".vimrc" ".emacs.d")
 
 for i in "${files[@]}"
 do
