@@ -16,7 +16,7 @@ export PATH="/Applications/Sublime Text.app/Contents/SharedSupport/bin:$PATH"
 # add emacs-mac-app to path
 export PATH="/Applications/MacPorts/EmacsMac.app/Contents/MacOS/:$PATH"
 export PATH="/Applications/MacPorts/EmacsMac.app/Contents/MacOS/bin:$PATH"
-
+# set emacs as the default terminal text editor
 export EDITOR="emacsclient -nw"
 
 ### LOAD PLUGINS
