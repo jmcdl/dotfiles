@@ -113,3 +113,8 @@
 (use-package which-key
   :diminish
   :config (which-key-mode))
+
+
+;; Git Configurations
+(use-package magit
+  :ensure t)
