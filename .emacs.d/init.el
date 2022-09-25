@@ -107,3 +107,9 @@
 (sensible-defaults/yank-to-point-on-mouse-click)
 ;; sensible key bindings
 (sensible-defaults/use-all-keybindings)
+
+;; which-key is a minor mode that helps discover key bindings. If you
+;; enter a prefix and wait the minibuffer will display matching  keybindings.
+(use-package which-key
+  :diminish
+  :config (which-key-mode))
