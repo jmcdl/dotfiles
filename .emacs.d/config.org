@@ -1,0 +1,417 @@
+#+TITLE: emacs configuration file
+#+AUTHOR: James McDonell
+#+PROPERTY: header-args :results silent
+
+* Bootstrap
+
+** Defaults
+
+Some preferred defaults. These will change over time.
+
+*** Settings
+
+Defaults taken from
+  - [[https://github.com/angrybacon/dotemacs/blob/master/dotemacs.org][angrybacon's config]]
+  - [[https://github.com/hrs/dotfiles/blob/main/emacs/.config/emacs/configuration.org][hrs' config]]
+
+#+BEGIN_SRC emacs-lisp
+(setq-default
+ ad-redefinition-action 'accept         ; Silence warnings for redefinition
+ auto-save-list-file-prefix nil         ; Prevent tracking for auto-saves
+ confirm-kill-emacs 'y-or-n-p           ; Confirm before closing emacs
+ create-lockfiles nil                   ; Locks are more nuisance than blessing
+ cursor-in-non-selected-windows nil     ; Hide the cursor in inactive windows
+ ;; cursor-type '(hbar . 2)                ; Underline-shaped cursor
+ custom-unlispify-menu-entries nil      ; Prefer kebab-case for titles
+ custom-unlispify-tag-names nil         ; Prefer kebab-case for symbols
+ default-directory "~/"                 ; Open files from home directory
+ delete-by-moving-to-trash t            ; Delete files to trash
+ delete-selected-mode t                 ; Delete the selected text
+ dired-listing-switches "-alh"          ; Add files in human-readable units in dired
+ fill-column 80                         ; Set width for automatic line breaks
+ gc-cons-threshold (* 8 1024 1024)      ; We're not using Game Boys anymore
+ help-window-select t                   ; Focus new help windows when opened
+ indent-tabs-mode nil                   ; Stop using tabs to indent
+ inhibit-startup-screen t               ; Disable start-up screen
+ initial-scratch-message nil            ; Empty the initial *scratch* buffer
+ initial-major-mode #'org-mode          ; Prefer `org-mode' for *scratch*
+ mouse-yank-at-point t                  ; Yank at point rather than mouse cursor position
+ native-comp-async-report-warnings-errors 'silent ; Skip error buffers
+ read-process-output-max (* 1024 1024)  ; Increase read size for data chunks
+ recenter-positions '(5 bottom)         ; Set re-centering positions
+ require-final-newline t                ; Insert a newline at end when saving
+ scroll-conservatively 101              ; Avoid recentering when scrolling far
+ scroll-margin 1                        ; Add a margin when scrolling vertically
+ select-enable-clipboard t              ; Merge system's and Emacs' clipboard
+ sentence-end-double-space nil          ; Use a single space after dots
+ show-help-function nil                 ; Disable help text everywhere
+ show-paren-delay 0.0                   ; Show matching parens without delay
+ tab-always-indent 'complete            ; Indent first then try completions
+ tab-width 4                            ; Smaller width for tab characters
+ uniquify-buffer-name-style 'forward    ; Uniquify buffer names
+ use-short-answers t                    ; Replace yes/no prompts with y/n
+ vc-follow-symlinks t                   ; Follow symlinks when opening a file
+ visible-bell t                         ; Flash instead of sound for problems
+ window-combination-resize t)           ; Resize windows proportionally
+;; x-stretch-cursor t)                    ; Stretch cursor to the glyph width
+;; (blink-cursor-mode 0)                   ; Prefer a still cursor
+(delete-selection-mode 1)               ; Replace region when inserting text
+(fset 'yes-or-no-p 'y-or-n-p)           ; Shorten yes/no to y/n
+(global-subword-mode 1)                 ; Iterate through CamelCase words
+(global-auto-revert-mode t)             ; If something changes an open file, update the buffer
+(global-display-line-numbers-mode t)    ; Always show line numbers
+(global-font-lock-mode t)               ; Turn on syntax highlighting whenever possible
+(menu-bar-mode -1)                      ; Disable menu on startup
+(mouse-avoidance-mode 'exile)           ; Avoid collision of mouse with point
+(put 'downcase-region 'disabled nil)    ; Enable `downcase-region'
+(put 'scroll-left 'disabled nil)        ; Enable `scroll-left'
+(put 'upcase-region 'disabled nil)      ; Enable `upcase-region'
+(set-default-coding-systems 'utf-8)     ; Default to utf-8 encoding
+(show-paren-mode t)                     ; Show matching parentheses
+(tool-bar-mode -1)                      ; Disable tools on startup
+(setq frame-title-format                ; Show file path in frame header
+      (list (format "%s %%S: %%j " (system-name))
+        '(buffer-file-name "%f" (dired-directory dired-directory "%b"))))
+(add-hook 'before-save-hook             ; delete trailing whitespace on save
+          'delete-trailing-whitespace)
+(add-hook 'after-save-hook              ; make files that start with #! executable
+            'executable-make-buffer-file-executable-if-script-p)
+#+END_SRC
+
+*** Utility Functions
+
+#+BEGIN_SRC emacs-lisp
+(defun comment-or-uncomment-region-or-line ()
+  "Comments or uncomments the region or the current line if
+there's no active region."
+  (interactive)
+  (let (beg end)
+    (if (region-active-p)
+        (setq beg (region-beginning) end (region-end))
+      (setq beg (line-beginning-position) end (line-end-position)))
+    (comment-or-uncomment-region beg end)))
+
+(defun reset-text-size ()
+  (interactive)
+  (text-scale-set 0))
+
+(defun offer-to-create-parent-directories-on-save ()
+  "When saving a file in a directory that doesn't exist, offer
+to (recursively) create the file's parent directories."
+  (add-hook 'before-save-hook
+            (lambda ()
+              (when buffer-file-name
+                (let ((dir (file-name-directory buffer-file-name)))
+                  (when (and (not (file-exists-p dir))
+                             (y-or-n-p (format "Directory %s does not exist. Create it?" dir)))
+                    (make-directory dir t)))))))
+#+END_SRC
+
+*** Key Bindings
+
+#+BEGIN_SRC emacs-lisp
+;; Comment or uncomment a region by hitting M-;.
+  (global-set-key (kbd "M-;")
+                  'comment-or-uncomment-region-or-line)
+
+;; Make <home> and <end> move point to the beginning and end of the line, respectively.
+  (global-set-key (kbd "<home>") 'move-beginning-of-line)
+  (global-set-key (kbd "<end>") 'move-end-of-line)
+
+;; Bind C-+ and C-- to increase and decrease text size, respectively.
+  (define-key global-map (kbd "C-)") 'reset-text-size)
+  (define-key global-map (kbd "C-+") 'text-scale-increase)
+  (define-key global-map (kbd "C-=") 'text-scale-increase)
+  (define-key global-map (kbd "C-_") 'text-scale-decrease)
+  (define-key global-map (kbd "C--") 'text-scale-decrease)
+#+END_SRC
+
+** Packages
+
+This configuration relies on =straight= and prefers latest Git heads for its
+packages over the default behavior from the built-in =package.el= which pulls
+releases from (M)ELPA.
+
+For customizing and loading the packages, =use-package= incentivizes clearly
+defined, consistent and more efficient configurations for all packages used in
+this document.
+
+#+BEGIN_SRC emacs-lisp
+(setq-default
+ straight-use-package-by-default t)     ; Allow `use-package' interface
+#+END_SRC
+
+Bootstrap =straight=.
+
+#+BEGIN_SRC emacs-lisp
+(let* ((bootstrap-file "straight/repos/straight.el/bootstrap.el")
+       (bootstrap-path (expand-file-name bootstrap-file user-emacs-directory))
+       (bootstrap-version 5)
+       (install.el "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"))
+  (unless (file-exists-p bootstrap-path)
+    (with-current-buffer
+        (url-retrieve-synchronously install.el 'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-path nil 'nomessage))
+#+END_SRC
+
+Install =use-package= and defer all packages by default.
+
+#+BEGIN_SRC emacs-lisp
+(straight-use-package 'use-package)
+(setq-default use-package-always-defer t)
+#+END_SRC
+
+** Cache
+
+Use =.cache/= to contain local data. This is to avoid littering in the Emacs
+directory with an ever-growing number of packages used on a daily basis.
+
+#+BEGIN_SRC emacs-lisp
+(use-package shelldock
+    :load-path "lisp/shelldock"
+    :straight nil
+    :commands (shelldock))
+#+END_SRC
+
+
+Garbage-collect on focus-out, Emacs /should/ feel snappier overall.
+
+#+BEGIN_SRC emacs-lisp
+(add-function :after after-focus-change-function
+  (defun me/garbage-collect-maybe ()
+    (unless (frame-focus-state)
+      (garbage-collect))))
+#+END_SRC
+
+I chose to lay out my configurations and customizations in this very Org
+document for better visibility and maintainability through time and various
+upgrades. Albeit useful, the =customize-*= routines go against that strategy by
+writing directly at the end of the =user-init-file= or into a dedicated file
+when set accordingly.
+
+To fight the littering I've decided to completely disable this feature and
+redirect the writing to =/dev/null=.
+
+#+BEGIN_SRC emacs-lisp
+(setq-default custom-file null-device)
+#+END_SRC
+
+Store backups and auto-saved files in their own directories
+
+#+BEGIN_SRC emacs-lisp
+  (setq
+   backup-by-copying t      ; don't clobber symlinks
+   backup-directory-alist
+   '(("." . "~/.backups/"))    ; don't litter my fs tree
+   delete-old-versions t
+   kept-new-versions 6
+   kept-old-versions 2
+   version-control t
+   auto-save-file-name-transforms
+   '(("." "~/.autosaves/" t))       ; use versioned backups
+   )
+#+END_SRC
+
+** Customize Typography
+
+#+BEGIN_SRC emacs-lisp
+(set-face-attribute 'default nil
+                    :family "Andale Mono"
+                    :height 140
+                    :weight 'normal
+                    :width 'normal)
+#+END_SRC
+
+** Themes
+
+#+BEGIN_SRC emacs-lisp
+(use-package nord-theme
+    :defer t
+    :init)
+(load-theme 'nord t)
+#+END_SRC
+
+* Languages
+
+** Intellisense
+
+*** Code References
+
+Find code references throughout a codebase.
+
+#+BEGIN_SRC emacs-lisp
+(use-package xref
+  :straight nil
+  :bind
+  ([remap xref-find-apropos] . xref-find-definitions)
+  ([remap xref-find-definitions] . xref-find-definitions-other-window)
+  :config
+  (with-eval-after-load 'evil
+    (evil-define-key* 'motion xref--xref-buffer-mode-map
+      (kbd "<backtab") #'xref-prev-group
+      (kbd "<return") #'xref-goto-xref
+      (kbd "<tab>") #'xref-next-group)))
+#+END_SRC
+
+*** Language Server Protocol
+
+Yup, Emacs supports LSP.
+
+#+BEGIN_SRC emacs-lisp
+(use-package eglot
+  :custom
+  (eglot-autoshutdown t)
+  :hook
+  (typescript-mode . eglot-ensure)
+  :init
+  (put 'eglot-server-programs 'safe-local-variable 'listp)
+  :config
+  (add-to-list 'eglot-stay-out-of 'eldoc-documentation-strategy)
+  (put 'eglot-error 'flymake-overlay-control nil)
+  (put 'eglot-warning 'flymake-overlay-control nil)
+  (advice-add 'eglot--apply-workspace-edit :after #'me/project-save)
+  (advice-add 'project-kill-buffers :before #'me/eglot-shutdown-project)
+  :preface
+  (defun me/eglot-shutdown-project ()
+    "Kill the LSP server for the current project if it exists."
+    (when-let ((server (eglot-current-server)))
+      (ignore-errors (eglot-shutdown server)))))
+#+END_SRC
+
+*** Linters
+
+#+BEGIN_SRC emacs-lisp
+(use-package flymake
+  :straight nil
+  :custom
+  (flymake-fringe-indicator-position nil))
+#+END_SRC
+
+Run /Prettier/ against the whole buffer on save. See the
+[[#directory-local-variables][Directory-Local Variables]] section for automatic
+enabling of the minor mode.
+
+#+BEGIN_SRC emacs-lisp
+(use-package prettier
+  :init
+  (add-to-list 'safe-local-eval-forms '(prettier-mode)))
+#+END_SRC
+
+Auto-format different source code files extremely intelligently
+
+#+BEGIN_SRC emacs-lisp
+;; https://github.com/radian-software/apheleia
+(use-package apheleia
+  :ensure t
+  :config
+  (apheleia-global-mode +1))
+#+END_SRC
+
+*** Tree-Sitter
+
+Use [[https://tree-sitter.github.io/tree-sitter/][Tree-sitter]] to handle more
+complex syntax trees where the default alternatives lack the highlighting power.
+
+#+BEGIN_SRC emacs-lisp
+(use-package tree-sitter
+  :ensure t
+  :config
+  ;; activate tree-sitter on any buffer containing code for which it has a parser available
+  (global-tree-sitter-mode)
+  ;; you can easily see the difference tree-sitter-hl-mode makes for python, ts or tsx
+  ;; by switching on and off
+  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
+
+(use-package tree-sitter-langs
+  :ensure t
+  :after tree-sitter)
+
+#+END_SRC
+
+** Mode-Line
+
+Prettify the mode-line with customizable and conditional segments.|
+
+** OS-Specific
+
+Initialize environment variables.
+
+#+BEGIN_QUOTE
+Ever find that a command works in your shell, but not in Emacs?
+
+This happens a lot on OS X, where an Emacs instance started from the GUI
+inherits a default set of environment variables.
+
+This library works solves this problem by copying important environment
+variables from the user's shell: it works by asking your shell to print out the
+variables of interest, then copying them into the Emacs environment.
+
+--- Steve Purcell
+#+END_QUOTE
+
+| TODO | Figure out how to feed nvm path from a non-interactive shell |
+
+#+BEGIN_SRC emacs-lisp
+(use-package exec-path-from-shell
+  :if (eq window-system 'ns)
+  :hook
+  (after-init . exec-path-from-shell-initialize))
+#+END_SRC
+
+Augment Emacs experience for MacOS users.
+
+#+BEGIN_SRC emacs-lisp
+(when (eq system-type 'darwin)
+  (setq-default
+   ns-alternate-modifier 'super         ; Map Super to the Alt key
+   ns-command-modifier 'meta            ; Map Meta to the Cmd key
+   ns-pop-up-frames nil                 ; Always re-use the same frame
+   ns-use-mwheel-momentum nil))         ; Disable smooth scroll
+#+END_SRC
+
+** Parentheses
+
+Highlight parenthese-like delimiters in a rainbow fashion. It eases the reading
+when dealing with mismatched parentheses.
+
+#+BEGIN_SRC emacs-lisp
+(use-package rainbow-delimiters
+  :hook
+  (prog-mode . rainbow-delimiters-mode))
+#+END_SRC
+
+** Version Control
+
+Display Git changes indicators in the left fringe. Fringes are not available
+under TTY.
+
+#+BEGIN_SRC emacs-lisp
+(use-package diff-hl)
+#+END_SRC
+
+Major modes for Git-specific files.
+
+#+BEGIN_SRC emacs-lisp
+(use-package git-modes)
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(use-package magit)
+#+END_SRC
+
+** Whitespaces
+
+Highlight trailing space-like characters, eg. trailing spaces, tabs, empty
+lines.
+
+#+BEGIN_SRC emacs-lisp
+(use-package whitespace
+  :straight nil
+  :hook
+  (prog-mode . whitespace-mode)
+  (text-mode . whitespace-mode)
+  :custom
+  (whitespace-style '(face empty indentation::space tab trailing)))
+#+END_SRC
