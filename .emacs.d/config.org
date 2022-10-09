@@ -15,67 +15,68 @@ Defaults taken from
   - [[https://github.com/hrs/dotfiles/blob/main/emacs/.config/emacs/configuration.org][hrs' config]]
 
 #+BEGIN_SRC emacs-lisp
-(setq-default
- ad-redefinition-action 'accept         ; Silence warnings for redefinition
- auto-save-list-file-prefix nil         ; Prevent tracking for auto-saves
- confirm-kill-emacs 'y-or-n-p           ; Confirm before closing emacs
- create-lockfiles nil                   ; Locks are more nuisance than blessing
- cursor-in-non-selected-windows nil     ; Hide the cursor in inactive windows
- ;; cursor-type '(hbar . 2)                ; Underline-shaped cursor
- custom-unlispify-menu-entries nil      ; Prefer kebab-case for titles
- custom-unlispify-tag-names nil         ; Prefer kebab-case for symbols
- default-directory "~/"                 ; Open files from home directory
- delete-by-moving-to-trash t            ; Delete files to trash
- delete-selected-mode t                 ; Delete the selected text
- dired-listing-switches "-alh"          ; Add files in human-readable units in dired
- fill-column 80                         ; Set width for automatic line breaks
- gc-cons-threshold (* 8 1024 1024)      ; We're not using Game Boys anymore
- help-window-select t                   ; Focus new help windows when opened
- indent-tabs-mode nil                   ; Stop using tabs to indent
- inhibit-startup-screen t               ; Disable start-up screen
- initial-scratch-message nil            ; Empty the initial *scratch* buffer
- initial-major-mode #'org-mode          ; Prefer `org-mode' for *scratch*
- mouse-yank-at-point t                  ; Yank at point rather than mouse cursor position
- native-comp-async-report-warnings-errors 'silent ; Skip error buffers
- read-process-output-max (* 1024 1024)  ; Increase read size for data chunks
- recenter-positions '(5 bottom)         ; Set re-centering positions
- require-final-newline t                ; Insert a newline at end when saving
- scroll-conservatively 101              ; Avoid recentering when scrolling far
- scroll-margin 1                        ; Add a margin when scrolling vertically
- select-enable-clipboard t              ; Merge system's and Emacs' clipboard
- sentence-end-double-space nil          ; Use a single space after dots
- show-help-function nil                 ; Disable help text everywhere
- show-paren-delay 0.0                   ; Show matching parens without delay
- tab-always-indent 'complete            ; Indent first then try completions
- tab-width 4                            ; Smaller width for tab characters
- uniquify-buffer-name-style 'forward    ; Uniquify buffer names
- use-short-answers t                    ; Replace yes/no prompts with y/n
- vc-follow-symlinks t                   ; Follow symlinks when opening a file
- visible-bell t                         ; Flash instead of sound for problems
- window-combination-resize t)           ; Resize windows proportionally
-;; x-stretch-cursor t)                    ; Stretch cursor to the glyph width
-;; (blink-cursor-mode 0)                   ; Prefer a still cursor
-(delete-selection-mode 1)               ; Replace region when inserting text
-(fset 'yes-or-no-p 'y-or-n-p)           ; Shorten yes/no to y/n
-(global-subword-mode 1)                 ; Iterate through CamelCase words
-(global-auto-revert-mode t)             ; If something changes an open file, update the buffer
-(global-display-line-numbers-mode t)    ; Always show line numbers
-(global-font-lock-mode t)               ; Turn on syntax highlighting whenever possible
-(menu-bar-mode -1)                      ; Disable menu on startup
-(mouse-avoidance-mode 'exile)           ; Avoid collision of mouse with point
-(put 'downcase-region 'disabled nil)    ; Enable `downcase-region'
-(put 'scroll-left 'disabled nil)        ; Enable `scroll-left'
-(put 'upcase-region 'disabled nil)      ; Enable `upcase-region'
-(set-default-coding-systems 'utf-8)     ; Default to utf-8 encoding
-(show-paren-mode t)                     ; Show matching parentheses
-(tool-bar-mode -1)                      ; Disable tools on startup
-(setq frame-title-format                ; Show file path in frame header
-      (list (format "%s %%S: %%j " (system-name))
-        '(buffer-file-name "%f" (dired-directory dired-directory "%b"))))
-(add-hook 'before-save-hook             ; delete trailing whitespace on save
-          'delete-trailing-whitespace)
-(add-hook 'after-save-hook              ; make files that start with #! executable
-            'executable-make-buffer-file-executable-if-script-p)
+  (setq-default
+   ad-redefinition-action 'accept         ; Silence warnings for redefinition
+   auto-save-list-file-prefix nil         ; Prevent tracking for auto-saves
+   confirm-kill-emacs 'y-or-n-p           ; Confirm before closing emacs
+   create-lockfiles nil                   ; Locks are more nuisance than blessing
+   cursor-in-non-selected-windows nil     ; Hide the cursor in inactive windows
+   ;; cursor-type '(hbar . 2)                ; Underline-shaped cursor
+   custom-unlispify-menu-entries nil      ; Prefer kebab-case for titles
+   custom-unlispify-tag-names nil         ; Prefer kebab-case for symbols
+   default-directory "~/"                 ; Open files from home directory
+   delete-by-moving-to-trash t            ; Delete files to trash
+   delete-selected-mode t                 ; Delete the selected text
+   dired-listing-switches "-alh"          ; Add files in human-readable units in dired
+   fill-column 80                         ; Set width for automatic line breaks
+   gc-cons-threshold (* 8 1024 1024)      ; We're not using Game Boys anymore
+   help-window-select t                   ; Focus new help windows when opened
+   indent-tabs-mode nil                   ; Stop using tabs to indent
+   inhibit-startup-screen t               ; Disable start-up screen
+   initial-scratch-message nil            ; Empty the initial *scratch* buffer
+   initial-major-mode #'org-mode          ; Prefer `org-mode' for *scratch*
+   mac-pass-command-to-system nil         ; Prevent emacs from passing commands to the mac OS
+   mouse-yank-at-point t                  ; Yank at point rather than mouse cursor position
+   native-comp-async-report-warnings-errors 'silent ; Skip error buffers
+   read-process-output-max (* 1024 1024)  ; Increase read size for data chunks
+   recenter-positions '(5 bottom)         ; Set re-centering positions
+   require-final-newline t                ; Insert a newline at end when saving
+   scroll-conservatively 101              ; Avoid recentering when scrolling far
+   scroll-margin 1                        ; Add a margin when scrolling vertically
+   select-enable-clipboard t              ; Merge system's and Emacs' clipboard
+   sentence-end-double-space nil          ; Use a single space after dots
+   show-help-function nil                 ; Disable help text everywhere
+   show-paren-delay 0.0                   ; Show matching parens without delay
+   tab-always-indent 'complete            ; Indent first then try completions
+   tab-width 4                            ; Smaller width for tab characters
+   uniquify-buffer-name-style 'forward    ; Uniquify buffer names
+   use-short-answers t                    ; Replace yes/no prompts with y/n
+   vc-follow-symlinks t                   ; Follow symlinks when opening a file
+   visible-bell t                         ; Flash instead of sound for problems
+   window-combination-resize t)           ; Resize windows proportionally
+  ;; x-stretch-cursor t)                    ; Stretch cursor to the glyph width
+  ;; (blink-cursor-mode 0)                   ; Prefer a still cursor
+  (delete-selection-mode 1)               ; Replace region when inserting text
+  (fset 'yes-or-no-p 'y-or-n-p)           ; Shorten yes/no to y/n
+  (global-subword-mode 1)                 ; Iterate through CamelCase words
+  (global-auto-revert-mode t)             ; If something changes an open file, update the buffer
+  (global-display-line-numbers-mode t)    ; Always show line numbers
+  (global-font-lock-mode t)               ; Turn on syntax highlighting whenever possible
+  (menu-bar-mode -1)                      ; Disable menu on startup
+  (mouse-avoidance-mode 'exile)           ; Avoid collision of mouse with point
+  (put 'downcase-region 'disabled nil)    ; Enable `downcase-region'
+  (put 'scroll-left 'disabled nil)        ; Enable `scroll-left'
+  (put 'upcase-region 'disabled nil)      ; Enable `upcase-region'
+  (set-default-coding-systems 'utf-8)     ; Default to utf-8 encoding
+  (show-paren-mode t)                     ; Show matching parentheses
+  (tool-bar-mode -1)                      ; Disable tools on startup
+  (setq frame-title-format                ; Show file path in frame header
+        (list (format "%s %%S: %%j " (system-name))
+          '(buffer-file-name "%f" (dired-directory dired-directory "%b"))))
+  (add-hook 'before-save-hook             ; delete trailing whitespace on save
+            'delete-trailing-whitespace)
+  (add-hook 'after-save-hook              ; make files that start with #! executable
+              'executable-make-buffer-file-executable-if-script-p)
 #+END_SRC
 
 *** Utility Functions
@@ -204,13 +205,13 @@ Store backups and auto-saved files in their own directories
   (setq
    backup-by-copying t      ; don't clobber symlinks
    backup-directory-alist
-   '(("." . "~/.backups/"))    ; don't litter my fs tree
+   `((".*" . "~/.backups/"))    ; don't litter my fs tree
    delete-old-versions t
    kept-new-versions 6
    kept-old-versions 2
    version-control t
    auto-save-file-name-transforms
-   '(("." "~/.autosaves/" t))       ; use versioned backups
+   `((".*" ,temporary-file-directory t))       ; use versioned backups
    )
 #+END_SRC
 
@@ -415,3 +416,22 @@ lines.
   :custom
   (whitespace-style '(face empty indentation::space tab trailing)))
 #+END_SRC
+
+** Useful Things
+
+Enable package for dragging lines and regions
+
+#+begin_src emacs-lisp
+(use-package move-text
+  :config
+  (move-text-default-bindings))
+#+end_src
+
+Which-key is a minor mode that helps discover key bindings. If you
+enter a prefix and wait the minibuffer will display matching  keybindings.
+
+#+begin_src emacs-lisp
+(use-package which-key
+  :diminish
+  :config (which-key-mode))
+#+end_src
