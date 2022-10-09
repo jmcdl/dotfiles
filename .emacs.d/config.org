@@ -10,7 +10,7 @@ Some preferred defaults. These will change over time.
 
 *** Settings
 
-Defaults taken from
+Defaults mostly borrowed from
   - [[https://github.com/angrybacon/dotemacs/blob/master/dotemacs.org][angrybacon's config]]
   - [[https://github.com/hrs/dotfiles/blob/main/emacs/.config/emacs/configuration.org][hrs' config]]
 
@@ -49,12 +49,13 @@ Defaults taken from
    show-paren-delay 0.0                   ; Show matching parens without delay
    tab-always-indent 'complete            ; Indent first then try completions
    tab-width 4                            ; Smaller width for tab characters
-   uniquify-buffer-name-style 'forward    ; Uniquify buffer names
+   ;; uniquify-buffer-name-style 'forward    ; Uniquify buffer names
    use-short-answers t                    ; Replace yes/no prompts with y/n
    vc-follow-symlinks t                   ; Follow symlinks when opening a file
    visible-bell t                         ; Flash instead of sound for problems
-   window-combination-resize t)           ; Resize windows proportionally
-  ;; x-stretch-cursor t)                    ; Stretch cursor to the glyph width
+  ;; window-combination-resize t           ; Resize windows proportionally
+  ;; x-stretch-cursor t                    ; Stretch cursor to the glyph width
+  )
   ;; (blink-cursor-mode 0)                   ; Prefer a still cursor
   (delete-selection-mode 1)               ; Replace region when inserting text
   (fset 'yes-or-no-p 'y-or-n-p)           ; Shorten yes/no to y/n
@@ -77,7 +78,7 @@ Defaults taken from
             'delete-trailing-whitespace)
   (add-hook 'after-save-hook              ; make files that start with #! executable
               'executable-make-buffer-file-executable-if-script-p)
-#+END_SRC
+#+end_src
 
 *** Utility Functions
 
@@ -106,11 +107,11 @@ to (recursively) create the file's parent directories."
                   (when (and (not (file-exists-p dir))
                              (y-or-n-p (format "Directory %s does not exist. Create it?" dir)))
                     (make-directory dir t)))))))
-#+END_SRC
+#+end_src
 
 *** Key Bindings
 
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 ;; Comment or uncomment a region by hitting M-;.
   (global-set-key (kbd "M-;")
                   'comment-or-uncomment-region-or-line)
@@ -125,9 +126,9 @@ to (recursively) create the file's parent directories."
   (define-key global-map (kbd "C-=") 'text-scale-increase)
   (define-key global-map (kbd "C-_") 'text-scale-decrease)
   (define-key global-map (kbd "C--") 'text-scale-decrease)
-#+END_SRC
+#+end_src
 
-** Packages
+** Package Management
 
 This configuration relies on =straight= and prefers latest Git heads for its
 packages over the default behavior from the built-in =package.el= which pulls
@@ -137,14 +138,14 @@ For customizing and loading the packages, =use-package= incentivizes clearly
 defined, consistent and more efficient configurations for all packages used in
 this document.
 
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (setq-default
  straight-use-package-by-default t)     ; Allow `use-package' interface
-#+END_SRC
+#+end_src
 
 Bootstrap =straight=.
 
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (let* ((bootstrap-file "straight/repos/straight.el/bootstrap.el")
        (bootstrap-path (expand-file-name bootstrap-file user-emacs-directory))
        (bootstrap-version 5)
@@ -155,36 +156,36 @@ Bootstrap =straight=.
       (goto-char (point-max))
       (eval-print-last-sexp)))
   (load bootstrap-path nil 'nomessage))
-#+END_SRC
+#+end_src
 
 Install =use-package= and defer all packages by default.
 
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (straight-use-package 'use-package)
 (setq-default use-package-always-defer t)
-#+END_SRC
+#+end_src
 
 ** Cache
 
 Use =.cache/= to contain local data. This is to avoid littering in the Emacs
 directory with an ever-growing number of packages used on a daily basis.
 
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (use-package shelldock
     :load-path "lisp/shelldock"
     :straight nil
     :commands (shelldock))
-#+END_SRC
+#+end_src
 
 
 Garbage-collect on focus-out, Emacs /should/ feel snappier overall.
 
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (add-function :after after-focus-change-function
   (defun me/garbage-collect-maybe ()
     (unless (frame-focus-state)
       (garbage-collect))))
-#+END_SRC
+#+end_src
 
 I chose to lay out my configurations and customizations in this very Org
 document for better visibility and maintainability through time and various
@@ -195,13 +196,13 @@ when set accordingly.
 To fight the littering I've decided to completely disable this feature and
 redirect the writing to =/dev/null=.
 
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (setq-default custom-file null-device)
-#+END_SRC
+#+end_src
 
 Store backups and auto-saved files in their own directories
 
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (setq
    backup-by-copying t      ; don't clobber symlinks
    backup-directory-alist
@@ -213,28 +214,58 @@ Store backups and auto-saved files in their own directories
    auto-save-file-name-transforms
    `((".*" ,temporary-file-directory t))       ; use versioned backups
    )
-#+END_SRC
+#+end_src
 
 ** Customize Typography
 
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (set-face-attribute 'default nil
                     :family "Andale Mono"
                     :height 140
                     :weight 'normal
                     :width 'normal)
-#+END_SRC
+#+end_src
 
 ** Themes
 
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (use-package nord-theme
     :defer t
     :init)
 (load-theme 'nord t)
-#+END_SRC
+#+end_src
 
-* Languages
+** Useful Things
+:PROPERTIES:
+:ORDERED:  t
+:END:
+
+Enable package for dragging lines and regions
+
+#+begin_src emacs-lisp
+(use-package move-text
+  :config
+  (move-text-default-bindings))
+#+end_src
+
+Which-key is a minor mode that helps discover key bindings. If you
+enter a prefix and wait the minibuffer will display matching  keybindings.
+
+#+begin_src emacs-lisp
+  (use-package which-key
+    :config
+    (which-key-mode t))
+#+End_src
+** Evil (Not Using)
+
+Use Vim keybindings in Emacs
+
+#+begin_src emacs-lisp
+;;  (use-package evil)
+#+end_src
+
+
+* Development Tools
 
 ** Intellisense
 
@@ -242,7 +273,7 @@ Store backups and auto-saved files in their own directories
 
 Find code references throughout a codebase.
 
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (use-package xref
   :straight nil
   :bind
@@ -254,13 +285,13 @@ Find code references throughout a codebase.
       (kbd "<backtab") #'xref-prev-group
       (kbd "<return") #'xref-goto-xref
       (kbd "<tab>") #'xref-next-group)))
-#+END_SRC
+#+end_src
 
 *** Language Server Protocol
 
 Yup, Emacs supports LSP.
 
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (use-package eglot
   :custom
   (eglot-autoshutdown t)
@@ -279,43 +310,43 @@ Yup, Emacs supports LSP.
     "Kill the LSP server for the current project if it exists."
     (when-let ((server (eglot-current-server)))
       (ignore-errors (eglot-shutdown server)))))
-#+END_SRC
+#+end_src
 
 *** Linters
 
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (use-package flymake
   :straight nil
   :custom
   (flymake-fringe-indicator-position nil))
-#+END_SRC
+#+end_src
 
 Run /Prettier/ against the whole buffer on save. See the
 [[#directory-local-variables][Directory-Local Variables]] section for automatic
 enabling of the minor mode.
 
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (use-package prettier
   :init
   (add-to-list 'safe-local-eval-forms '(prettier-mode)))
-#+END_SRC
+#+end_src
 
 Auto-format different source code files extremely intelligently
 
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 ;; https://github.com/radian-software/apheleia
 (use-package apheleia
   :ensure t
   :config
   (apheleia-global-mode +1))
-#+END_SRC
+#+end_src
 
 *** Tree-Sitter
 
 Use [[https://tree-sitter.github.io/tree-sitter/][Tree-sitter]] to handle more
 complex syntax trees where the default alternatives lack the highlighting power.
 
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (use-package tree-sitter
   :ensure t
   :config
@@ -329,11 +360,7 @@ complex syntax trees where the default alternatives lack the highlighting power.
   :ensure t
   :after tree-sitter)
 
-#+END_SRC
-
-** Mode-Line
-
-Prettify the mode-line with customizable and conditional segments.|
+#+end_src
 
 ** OS-Specific
 
@@ -354,60 +381,60 @@ variables of interest, then copying them into the Emacs environment.
 
 | TODO | Figure out how to feed nvm path from a non-interactive shell |
 
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (use-package exec-path-from-shell
   :if (eq window-system 'ns)
   :hook
   (after-init . exec-path-from-shell-initialize))
-#+END_SRC
+#+end_src
 
 Augment Emacs experience for MacOS users.
 
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (when (eq system-type 'darwin)
   (setq-default
    ns-alternate-modifier 'super         ; Map Super to the Alt key
    ns-command-modifier 'meta            ; Map Meta to the Cmd key
    ns-pop-up-frames nil                 ; Always re-use the same frame
    ns-use-mwheel-momentum nil))         ; Disable smooth scroll
-#+END_SRC
+#+end_src
 
 ** Parentheses
 
 Highlight parenthese-like delimiters in a rainbow fashion. It eases the reading
 when dealing with mismatched parentheses.
 
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (use-package rainbow-delimiters
   :hook
   (prog-mode . rainbow-delimiters-mode))
-#+END_SRC
+#+end_src
 
 ** Version Control
 
 Display Git changes indicators in the left fringe. Fringes are not available
 under TTY.
 
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (use-package diff-hl)
-#+END_SRC
+#+end_src
 
 Major modes for Git-specific files.
 
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (use-package git-modes)
-#+END_SRC
+#+end_src
 
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (use-package magit)
-#+END_SRC
+#+end_src
 
 ** Whitespaces
 
 Highlight trailing space-like characters, eg. trailing spaces, tabs, empty
 lines.
 
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (use-package whitespace
   :straight nil
   :hook
@@ -415,23 +442,4 @@ lines.
   (text-mode . whitespace-mode)
   :custom
   (whitespace-style '(face empty indentation::space tab trailing)))
-#+END_SRC
-
-** Useful Things
-
-Enable package for dragging lines and regions
-
-#+begin_src emacs-lisp
-(use-package move-text
-  :config
-  (move-text-default-bindings))
-#+end_src
-
-Which-key is a minor mode that helps discover key bindings. If you
-enter a prefix and wait the minibuffer will display matching  keybindings.
-
-#+begin_src emacs-lisp
-(use-package which-key
-  :diminish
-  :config (which-key-mode))
 #+end_src
