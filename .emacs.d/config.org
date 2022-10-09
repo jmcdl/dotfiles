@@ -391,12 +391,13 @@ variables of interest, then copying them into the Emacs environment.
 Augment Emacs experience for MacOS users.
 
 #+begin_src emacs-lisp
-(when (eq system-type 'darwin)
-  (setq-default
-   ns-alternate-modifier 'super         ; Map Super to the Alt key
-   ns-command-modifier 'meta            ; Map Meta to the Cmd key
-   ns-pop-up-frames nil                 ; Always re-use the same frame
-   ns-use-mwheel-momentum nil))         ; Disable smooth scroll
+  (when (eq system-type 'darwin)
+    (setq-default
+     dired-use-ls-dired nil               ; Fix error on mac
+     ns-alternate-modifier 'super         ; Map Super to the Alt key
+     ns-command-modifier 'meta            ; Map Meta to the Cmd key
+     ns-pop-up-frames nil                 ; Always re-use the same frame
+     ns-use-mwheel-momentum nil))         ; Disable smooth scroll
 #+end_src
 
 ** Parentheses
