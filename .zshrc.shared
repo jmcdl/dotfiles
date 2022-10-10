@@ -7,7 +7,7 @@ compinit
 alias l="ls -alG"
 alias j="jump"
 alias lg="lazygit"
-alias emacs="Emacs"
+alias emacs="Emacs&"
 alias ec="emacsclient -nw"
 alias ...="cd ../.."
 alias ....="cd ../../.."
@@ -19,6 +19,8 @@ export PATH="/Applications/Sublime Text.app/Contents/SharedSupport/bin:$PATH"
 # add emacs-mac-app to path
 export PATH="/Applications/MacPorts/EmacsMac.app/Contents/MacOS/:$PATH"
 export PATH="/Applications/MacPorts/EmacsMac.app/Contents/MacOS/bin:$PATH"
+# add doom emacs binaries to path
+export PATH="$HOME/.emacs.d/bin:$PATH"
 # set emacs as the default terminal text editor
 export EDITOR="emacsclient -nw"
 
