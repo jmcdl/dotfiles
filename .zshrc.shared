@@ -22,7 +22,7 @@ export PATH="/Applications/MacPorts/EmacsMac.app/Contents/MacOS/bin:$PATH"
 # add doom emacs binaries to path
 export PATH="$HOME/.emacs.d/bin:$PATH"
 # set emacs as the default terminal text editor
-export EDITOR="emacsclient -nw"
+# export EDITOR="emacsclient -nw"
 
 ### LOAD PLUGINS
 source ~/.zsh/git.plugin.zsh
