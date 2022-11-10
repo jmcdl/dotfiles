@@ -7,6 +7,7 @@ compinit
 alias l="ls -alG"
 alias j="jump"
 alias lg="lazygit"
+alias ws="webstorm"
 alias emacs="Emacs&"
 alias ec="emacsclient -nw"
 alias ...="cd ../.."
