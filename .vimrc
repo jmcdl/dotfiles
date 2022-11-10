@@ -38,5 +38,5 @@ autocmd Filetype gitcommit setlocal spell textwidth=72
 "   Ps = 4  -> steady underline.
 "   Ps = 5  -> blinking bar (xterm).
 "   Ps = 6  -> steady bar (xterm).
-let &t_SI = "\e[6 q"
-let &t_EI = "\e[2 q"
+let &t_SI = "\e[5 q"
+let &t_EI = "\e[1 q"
