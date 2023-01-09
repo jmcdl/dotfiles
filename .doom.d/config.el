@@ -1,76 +1,110 @@
-;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
+;;; ~/.config/doom / config.el -* - lexical - binding: t; -* -
 
-;; Place your private configuration here! Remember, you do not need to run 'doom
-;; sync' after modifying this file!
+(setq user-full-name "James McDonell"
+      user-mail-address "contact@jmcdl.com")
 
-
-;; Some functionality uses this to identify you, e.g. GPG configuration, email
-;; clients, file templates and snippets. It is optional.
-;;(setq user-full-name "James McDonell"
-;;      user-mail-address "contact@jmcdl.com")
-
-;; Doom exposes five (optional) variables for controlling fonts in Doom:
-;;
-;; - `doom-font' -- the primary font to use
-;; - `doom-variable-pitch-font' -- a non-monospace font (where applicable)
-;; - `doom-big-font' -- used for `doom-big-font-mode'; use this for
-;;   presentations or streaming.
-;; - `doom-unicode-font' -- for unicode glyphs
-;; - `doom-serif-font' -- for the `fixed-pitch-serif' face
-;;
-;; See 'C-h v doom-font' for documentation and more examples of what they
-;; accept. For example:
-;;
-;; (setq doom-font (font-spec :family "Fira Code" :size 12 :weight 'semi-light)
-     ;; doom-variable-pitch-font (font-spec :family "Fira Sans" :size 13))
-;;
-;; If you or Emacs can't find your font, use 'M-x describe-font' to look them
-;; up, `M-x eval-region' to execute elisp code, and 'M-x doom/reload-font' to
-;; refresh your font settings. If Emacs still can't find your font, it likely
-;; wasn't installed correctly. Font issues are rarely Doom issues!
-
-;; There are two ways to load a theme. Both assume the theme is installed and
-;; available. You can either set `doom-theme' or manually load a theme with the
-;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-one)
-
-;; This determines the style of line numbers in effect. If set to `nil', line
-;; numbers are disabled. For relative line numbers, set this to `relative'.
-(setq display-line-numbers-type t)
-
-;; If you use `org' and don't want your org files in the default location below,
-;; change `org-directory'. It must be set before org loads!
-(setq org-directory "~/code/org/")
+;; When I bring up Doom's scratch buffer with SPC x, it's often to play with
+;; elisp or note something down(that isn't worth an entry in my notes). I can
+;; do both in `lisp-interaction-mode'.
+(setq doom-scratch-initial-major-mode 'lisp-interaction-mode)
 
 
-;; Whenever you reconfigure a package, make sure to wrap your config in an
-;; `after!' block, otherwise Doom's defaults may override your settings. E.g.
 ;;
-;;   (after! PACKAGE
-;;     (setq x y))
-;;
-;; The exceptions to this rule:
-;;
-;;   - Setting file/directory variables (like `org-directory')
-;;   - Setting variables which explicitly tell you to set them before their
-;;     package is loaded (see 'C-h v VARIABLE' to look up their documentation).
-;;   - Setting doom variables (which start with 'doom-' or '+').
-;;
-;; Here are some additional functions/macros that will help you configure Doom.
-;;
-;; - `load!' for loading external *.el files relative to this one
-;; - `use-package!' for configuring packages
-;; - `after!' for running code after a package has loaded
-;; - `add-load-path!' for adding directories to the `load-path', relative to
-;;   this file. Emacs searches the `load-path' when you load packages with
-;;   `require' or `use-package'.
-;; - `map!' for binding new keys
-;;
-;; To get information about any of these functions/macros, move the cursor over
-;; the highlighted symbol at press 'K' (non-evil users must press 'C-c c k').
-;; This will open documentation for it, including demos of how they are used.
-;; Alternatively, use `C-h o' to look up a symbol (functions, variables, faces,
-;; etc).
-;;
-;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
-;; they are implemented.
+;;; UI
+
+(setq doom-theme 'doom-dracula
+     doom-font (font-spec :family "JetBrains Mono" :size 12 :weight 'light)
+     doom-variable-pitch-font (font-spec :family "DejaVu Sans" :size 13))
+
+;; Line numbers are pretty slow all around. The performance boost of disabling
+;; them outweighs the utility of always keeping them on.
+(setq display-line-numbers-type nil)
+
+;; Prevents some cases of Emacs flickering.
+(add-to-list 'default-frame-alist '(inhibit-double-buffering . t))
+
+;;; Modules
+
+;;; :completion company
+;; IMO, modern editors have trained a bad habit into us all: a burning need for
+;; completion all the time -- as we type, as we breathe, as we pray to the
+;; ancient ones -- but how often do you *really* need that information? I say
+;; rarely. So opt for manual completion:
+(after! company
+  (setq company-idle-delay nil))
+
+
+;;; :ui modeline
+;; An evil mode indicator is redundant with cursor shape
+(advice-add #'doom-modeline-segment--modals :override #'ignore)
+
+
+;;; :editor evil
+;; Focus new window after splitting
+(setq evil-split-window-below t
+      evil-vsplit-window-right t)
+
+;; Implicit /g flag on evil ex substitution, because I use the default behavior
+;; less often.
+(setq evil-ex-substitute-global t)
+
+
+;;; :tools lsp
+;; Disable invasive lsp-mode features
+(after! lsp-mode
+  (setq lsp-enable-symbol-highlighting nil
+        ;; If an LSP server isn't present when I start a prog-mode buffer, you
+        ;; don't need to tell me. I know. On some machines I don't care to have
+        ;; a whole development environment for some ecosystems.
+        lsp-enable-suggest-server-download nil))
+(after! lsp-ui
+  (setq lsp-ui-sideline-enable nil  ; no more useful than flycheck
+        lsp-ui-doc-enable nil))     ; redundant with K
+
+
+;;; :tools magit
+;; (setq magit-repository-directories '(("~/projects" . 2))
+;;       magit-save-repository-buffers nil
+;;       ;; Don't restore the wconf after quitting magit, it's jarring
+;;       magit-inhibit-save-previous-winconf t
+;;       transient-values '((magit-rebase "--autosquash" "--autostash")
+;;                          (magit-pull "--rebase" "--autostash")
+;;                          (magit-revert "--autostash")))
+
+
+;;; :lang org
+(setq +org-roam-auto-backlinks-buffer t
+      org-directory "~/org/"
+      org-roam-directory "~/org/roam/"
+      org-roam-db-location (concat org-roam-directory ".org-roam.db")
+      org-roam-dailies-directory "journal/"
+      org-agenda-files (directory-files-recursively org-directory "\\.org$")
+      org-archive-location (concat org-directory ".archive/%s::"))
+
+(after! org
+;;; org-agenda configs
+  (setq
+    org-default-notes-file (concat org-directory "refile.org")
+        org-refile-targets (quote ((nil :maxlevel . 3)
+                            (org-agenda-files :maxlevel . 3)))
+        org-enforce-todo-dependencies t
+        org-agenda-skip-scheduled-if-done t
+        org-agenda-skip-deadline-if-done t
+        org-agenda-include-deadlines t)
+
+  (setq org-startup-folded 'show2levels
+        org-ellipsis " [...] "
+        org-hide-emphasis-markers t
+        org-todo-keywords
+        (quote ((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
+                (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)")))
+        ;; My org/org-roam capture templates
+        org-capture-templates
+        '(("t" "Todo" entry (file "refile.org")
+          "* TODO %?\n  %i\n")
+          ("n" "Note" entry (file "refile.org")
+          "* %?\n")
+          ("j" "Journal" entry (file+datetree "journal.org")
+          "* %?\n"))))
+
+  (remove-hook '+doom-dashboard-functions #'doom-dashboard-widget-shortmenu)
